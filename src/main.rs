@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use bevy_editor_pls::*;
 
+mod ecs;
+
 fn main() {
     App::new()
     .add_plugins(DefaultPlugins)
@@ -9,6 +11,7 @@ fn main() {
     .add_plugin(bevy::diagnostic::EntityCountDiagnosticsPlugin)
     .add_startup_system(startup_system)
     .add_system(cube_move)
+    .add_plugin(ecs::ECSExample)
     .run()
 }
 
@@ -33,8 +36,6 @@ fn startup_system(
         }),
         ..Default::default()
     }).insert(Cube);
-
-    //test
 }
 
 fn cube_move(
