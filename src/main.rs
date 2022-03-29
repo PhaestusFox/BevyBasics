@@ -33,6 +33,8 @@ fn startup_system(
         }),
         ..Default::default()
     }).insert(Cube);
+
+    //test
 }
 
 fn cube_move(
