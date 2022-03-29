@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_editor_pls::*;
 
 mod ecs;
+mod systems;
 
 fn main() {
     App::new()
@@ -12,6 +13,7 @@ fn main() {
     .add_startup_system(startup_system)
     .add_system(cube_move)
     .add_plugin(ecs::ECSExample)
+    .add_plugin(systems::SystemPlugin)
     .run()
 }
 
