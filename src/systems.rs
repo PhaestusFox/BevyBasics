@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use super::common::*;
 
 pub struct SystemPlugin;
 
@@ -6,7 +7,6 @@ impl Plugin for SystemPlugin {
     fn build(&self, app: &mut App) {
         app.add_system(basic_system);
         app.add_startup_system(startup_system);
-        app.insert_resource(SpamTime(Timer::from_seconds(2., true)));
         app.add_system(exclusive_system.exclusive_system());
         app.add_system_to_stage(CoreStage::First, first_system);
         app.add_system_to_stage(CoreStage::Last, last_system);
@@ -14,8 +14,6 @@ impl Plugin for SystemPlugin {
         app.add_startup_system(test_system);
     }
 }
-
-struct SpamTime(Timer);
 
 fn startup_system(){
     println!("running startup system once");
@@ -36,15 +34,14 @@ fn exclusive_system(world: &mut World) {
     }
 }
 
-fn first_system(time: Res<Time>, mut timer: ResMut<SpamTime>) {
-    timer.0.tick(time.delta());
-    if timer.0.finished() {
+fn first_system(timer: Res<SpamTime>) {
+    if timer.finished() {
         println!("running first system");
     }
 }
 
 fn last_system(timer: Res<SpamTime>) {
-    if timer.0.finished(){
+    if timer.finished(){
         println!("running last system");
     }
 }

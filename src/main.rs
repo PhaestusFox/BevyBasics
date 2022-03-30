@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use bevy_editor_pls::*;
 
+mod common;
+
 mod ecs;
 mod systems;
 
