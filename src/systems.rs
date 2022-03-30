@@ -6,6 +6,7 @@ impl Plugin for SystemPlugin {
     fn build(&self, app: &mut App) {
         app.add_system(basic_system);
         app.add_startup_system(startup_system);
+        app.insert_resource(SpamTime(Timer::from_seconds(2., true)));
         app.add_system(exclusive_system.exclusive_system());
         app.add_system_to_stage(CoreStage::First, first_system);
         app.add_system_to_stage(CoreStage::Last, last_system);
@@ -16,9 +17,8 @@ impl Plugin for SystemPlugin {
 
 struct SpamTime(Timer);
 
-fn startup_system(mut commands: Commands){
+fn startup_system(){
     println!("running startup system once");
-    commands.insert_resource(SpamTime(Timer::from_seconds(2., true)));
 }
 
 fn basic_system(
@@ -83,17 +83,19 @@ fn system_chain_two(input: In<f32>, time: Res<Time>, mut loacl: Local<f32>) {
 fn test_system(
     mut commands: Commands,
     res: Res<Time>,
-    mut res_mut: ResMut<Assets<StandardMaterial>>,
+    res_mut: ResMut<Assets<Mesh>>,
     op_res: Option<Res<AssetServer>>,
     query: Query<&mut Transform, Changed<Interaction>>,
-    event_r: EventReader<MouseButton>,
-    event_w: EventWriter<KeyCode>,
+    mut event_r: EventReader<AssetEvent<StandardMaterial>>,
+    event_w: EventWriter<GamepadEvent>,
 ){
     commands.spawn().despawn();
     let _ = res;
-    res_mut.add(StandardMaterial::default());
+    let _ = res_mut;
     let _ = op_res;
     let _ = query;
-    let _ = event_r;
     let _ = event_w;
+    for event in event_r.iter(){
+        println!("got event {:?}", event);
+    }
 }
