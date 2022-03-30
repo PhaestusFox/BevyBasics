@@ -10,6 +10,7 @@ impl Plugin for SystemPlugin {
         app.add_system_to_stage(CoreStage::First, first_system);
         app.add_system_to_stage(CoreStage::Last, last_system);
         app.add_system(system_chain_one.chain(system_chain_two));
+        app.add_startup_system(test_system);
     }
 }
 
@@ -82,11 +83,17 @@ fn system_chain_two(input: In<f32>, time: Res<Time>, mut loacl: Local<f32>) {
 fn test_system(
     mut commands: Commands,
     res: Res<Time>,
-    mut res_mut: ResMut<Time>,
-    op_res: Option<Res<Time>>,
+    mut res_mut: ResMut<Assets<StandardMaterial>>,
+    op_res: Option<Res<AssetServer>>,
     query: Query<&mut Transform, Changed<Interaction>>,
-    event: EventReader<MouseButton>,
-    event_w: EventWriter<MouseButton>,
+    event_r: EventReader<MouseButton>,
+    event_w: EventWriter<KeyCode>,
 ){
-
+    commands.spawn().despawn();
+    let _ = res;
+    res_mut.add(StandardMaterial::default());
+    let _ = op_res;
+    let _ = query;
+    let _ = event_r;
+    let _ = event_w;
 }
