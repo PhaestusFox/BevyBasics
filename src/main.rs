@@ -5,6 +5,7 @@ mod common;
 
 mod ecs;
 mod systems;
+mod components;
 
 fn main() {
     App::new()
@@ -14,8 +15,10 @@ fn main() {
     .add_plugin(bevy::diagnostic::EntityCountDiagnosticsPlugin)
     .add_startup_system(startup_system)
     .add_system(cube_move)
+    .add_plugin(common::CommonPlugin)
     .add_plugin(ecs::ECSExample)
     .add_plugin(systems::SystemPlugin)
+    .add_plugin(components::ComponentPlugin)
     .run()
 }
 

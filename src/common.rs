@@ -6,6 +6,8 @@ impl Plugin for CommonPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(SpamTime(Timer::from_seconds(2., true)));
         app.add_system_to_stage(CoreStage::First, timer_updata);
+        app.register_type::<super::components::Speed>();
+        app.register_type::<super::components::Direction>();
     }
 }
 
