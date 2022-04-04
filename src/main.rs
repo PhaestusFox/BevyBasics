@@ -33,7 +33,8 @@ fn startup_system(
     let mut cam = PerspectiveCameraBundle::new_3d();
     cam.transform.translation = Vec3::ONE * 5.0;
     cam.transform.look_at(Vec3::ZERO, Vec3::Y);
-    commands.spawn_bundle(cam);
+    commands.spawn_bundle(cam)
+    .insert(common::MainCamera);
 
     commands.spawn_bundle(PbrBundle{
         mesh: mesh_assets.add(Mesh::from(shape::Cube { size: 1.0 })),

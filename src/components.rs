@@ -12,18 +12,18 @@ impl Plugin for ComponentPlugin {
         .add_system(speed_switch);
     }
 }
-//Start/////////////////////////////////////////////
+
 #[derive(Component)]
 #[component(storage = "SparseSet")]
-struct ComponentExample;
+pub struct ComponentExample;
 
 #[derive(Component, Default, Reflect)]
 #[reflect(Component)]
-pub struct Speed(f32);
+pub struct Speed(pub f32);
 
 #[derive(Component, Default, Reflect)]
 #[reflect(Component)]
-pub struct Direction(Vec3);
+pub struct Direction(pub Vec3);
 
 fn spawn_balls(
     mut commands: Commands,
@@ -96,4 +96,4 @@ fn speed_switch(
 }
 
 //End///////////////////////////////////////////////
-struct WorldSize(Vec3);
+pub struct WorldSize(pub Vec3);
