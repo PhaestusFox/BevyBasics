@@ -6,6 +6,7 @@ mod common;
 mod ecs;
 mod systems;
 mod components;
+mod entitys;
 
 fn main() {
     App::new()
@@ -19,6 +20,7 @@ fn main() {
     .add_plugin(ecs::ECSExample)
     .add_plugin(systems::SystemPlugin)
     .add_plugin(components::ComponentPlugin)
+    .add_plugin(entitys::EntityPlugin)
     .run()
 }
 
