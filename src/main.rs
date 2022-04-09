@@ -7,6 +7,7 @@ mod ecs;
 mod systems;
 mod components;
 mod entitys;
+mod resources;
 
 fn main() {
     App::new()
@@ -21,6 +22,7 @@ fn main() {
     .add_plugin(systems::SystemPlugin)
     .add_plugin(components::ComponentPlugin)
     .add_plugin(entitys::EntityPlugin)
+    .add_plugin(resources::ResourcePlugin)
     .run()
 }
 

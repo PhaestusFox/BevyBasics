@@ -33,14 +33,14 @@ fn spawn_ball(
     input: Res<Input<MouseButton>>,
     camera: Query<&Transform, With<MainCamera>>,
     mesh: Res<BallMesh>,
-    matt: Res<BallMatt>,
+    matt: Res<ColorWheel>,
 ) {
     if !input.just_pressed(MouseButton::Left) { return; }
     let start = camera.single().clone();
     let direction = start.looking_at(Vec3::ZERO, Vec3::Y).forward();
     let ball = commands.spawn_bundle(PbrBundle{
         mesh: mesh.0[0].clone(),
-        material: matt.0[0].clone(),
+        material: matt.get_color(ColorSet::Random, 0),
         transform: start,
         ..Default::default()
     })
@@ -97,21 +97,28 @@ fn change_color(
     mut color: Query<&mut Handle<StandardMaterial>>,
     current_ball: Option<Res<CurrentBall>>,
     input: Res<Input<KeyCode>>,
-    colors: Res<BallMatt>,
+    colors: Res<ColorWheel>,
 ){
     if current_ball.is_none() { return; }
     let ball = current_ball.unwrap().0;
+    let mut set_color = None;
     if input.just_pressed(KeyCode::R) {
-        let index = get_color_index(0, input.get_pressed());
-        *color.get_mut(ball).expect("Current ball has Color") = colors.0[index].clone();
+        set_color = Some(get_color_index(&colors, ColorSet::Red, input.get_pressed()));
     }
-    if input.just_pressed(KeyCode::G) {
-        let index = get_color_index(1, input.get_pressed());
-        *color.get_mut(ball).expect("Current ball has Color") = colors.0[index].clone();
+    else if input.just_pressed(KeyCode::G) {
+        set_color = Some(get_color_index(&colors, ColorSet::Blue, input.get_pressed()));
     }
-    if input.just_pressed(KeyCode::B) {
-        let index = get_color_index(2, input.get_pressed());
-        *color.get_mut(ball).expect("Current ball has Color") = colors.0[index].clone();
+    else if input.just_pressed(KeyCode::B) {
+        set_color = Some(get_color_index(&colors, ColorSet::Green, input.get_pressed()));
+    }
+    else if input.just_pressed(KeyCode::C) {
+        set_color = Some(get_color_index(&colors, ColorSet::Custom(0), input.get_pressed()));
+    }
+    else if input.just_pressed(KeyCode::NumpadDecimal) {
+        set_color = Some(colors.get_color(ColorSet::Random, 0));
+    }
+    if let Some(set_color) = set_color {
+        *color.get_mut(ball).expect("Current ball has Color") = set_color;
     }
 }
 
@@ -199,66 +206,11 @@ fn ball_ui_update(
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 struct BallMesh(Vec<Handle<Mesh>>);
-struct BallMatt(Vec<Handle<StandardMaterial>>);
 
 fn ball_resource_init(
     mut commands: Commands,
     mut mesh: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    let mut matts = Vec::with_capacity(41);
-
-    matts.push(materials.add(StandardMaterial {
-        base_color: Color::rgb(0., 0., 0.),
-        ..Default::default()
-    }));
-    matts.push(materials.add(StandardMaterial {
-        base_color: Color::rgb(0.5, 0.5, 0.5),
-        ..Default::default()
-    }));
-    matts.push(materials.add(StandardMaterial {
-        base_color: Color::rgb(1., 1., 1.),
-        ..Default::default()
-    }));
-    for i in 0..4 {
-        matts.push(materials.add(StandardMaterial {
-            base_color: Color::rgb(1. - (i as f32 * 0.25), 0., 0.),
-            ..Default::default()
-        }));
-        matts.push(materials.add(StandardMaterial {
-            base_color: Color::rgb(0., 1. - (i as f32 * 0.25), 0.),
-            ..Default::default()
-        }));
-        matts.push(materials.add(StandardMaterial {
-            base_color: Color::rgb(0., 0., 1. - (i as f32 * 0.25)),
-            ..Default::default()
-        }));
-        matts.push(materials.add(StandardMaterial {
-            base_color: Color::rgb(1., 1. - (i as f32 * 0.25), 0.),
-            ..Default::default()
-        }));
-        matts.push(materials.add(StandardMaterial {
-            base_color: Color::rgb(1. - (i as f32 * 0.25), 1., 0.),
-            ..Default::default()
-        }));
-        matts.push(materials.add(StandardMaterial {
-            base_color: Color::rgb(1. - (i as f32 * 0.25), 0., 1.),
-            ..Default::default()
-        }));
-        matts.push(materials.add(StandardMaterial {
-            base_color: Color::rgb(1., 0., 1. - (i as f32 * 0.25)),
-            ..Default::default()
-        }));
-        matts.push(materials.add(StandardMaterial {
-            base_color: Color::rgb(0., 1., 1. - (i as f32 * 0.25)),
-            ..Default::default()
-        }));
-        matts.push(materials.add(StandardMaterial {
-            base_color: Color::rgb(0., 1. - (i as f32 * 0.25), 1.),
-            ..Default::default()
-        }));
-    }
-    commands.insert_resource(BallMatt(matts));
     let mut prism = Mesh::new(bevy::render::render_resource::PrimitiveTopology::TriangleStrip);
     prism.set_attribute(Mesh::ATTRIBUTE_NORMAL, vec![[0.0, 1.0, 0.0]; 4]);
     prism.set_attribute(Mesh::ATTRIBUTE_POSITION, vec![
@@ -276,23 +228,24 @@ fn ball_resource_init(
     ]));
 }
 
-fn get_color_index<'a>(root: usize, input: impl ExactSizeIterator<Item=&'a KeyCode>) -> usize {
+fn get_color_index<'a>(wheel: &ColorWheel, set: ColorSet, input: impl ExactSizeIterator<Item=&'a KeyCode>) -> Handle<StandardMaterial> {
+    let mut index = 0;
     for key in input {
         match key {
-            KeyCode::Numpad0 => {return root + 0;},
-            KeyCode::Numpad1 => {return root + 3;},
-            KeyCode::Numpad2 => {return root + 6;},
-            KeyCode::Numpad3 => {return root + 9;},
-            KeyCode::Numpad4 => {return root + 12;},
-            KeyCode::Numpad5 => {return root + 15;},
-            KeyCode::Numpad6 => {return root + 18;},
-            KeyCode::Numpad7 => {return root + 21;},
-            KeyCode::Numpad8 => {return root + 24;},
-            KeyCode::Numpad9 => {return root + 27;},
+            KeyCode::Numpad0 => {index = 0;},
+            KeyCode::Numpad1 => {index = 1;},
+            KeyCode::Numpad2 => {index = 2;},
+            KeyCode::Numpad3 => {index = 3;},
+            KeyCode::Numpad4 => {index = 4;},
+            KeyCode::Numpad5 => {index = 5;},
+            KeyCode::Numpad6 => {index = 6;},
+            KeyCode::Numpad7 => {index = 7;},
+            KeyCode::Numpad8 => {index = 8;},
+            KeyCode::Numpad9 => {index = 9;},
             _ => {}
         }
     }
-    0
+    wheel.get_color(set, index)
 }
 
 fn move_cam(

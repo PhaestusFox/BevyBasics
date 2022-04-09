@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 
 pub use crate::components::{Speed, Direction as BBDirection, ComponentExample as BoxBall, WorldSize};
+pub use crate::resources::{DefaultFont, ColorSet, ColorWheel};
 
 #[derive(Component)]
 pub struct MainCamera;
@@ -20,14 +21,10 @@ impl Plugin for CommonPlugin {
     }
 }
 
-pub struct DefaultFont(pub Handle<Font>);
-
 fn ui_init(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
 ){
     commands.spawn_bundle(UiCameraBundle::default());
-    commands.insert_resource(DefaultFont(asset_server.load("./Raleway-Bold.ttf")));
 }
 
 pub struct SpamTime(Timer);
