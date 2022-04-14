@@ -23,7 +23,7 @@ pub struct Speed(pub f32);
 
 #[derive(Component, Default, Reflect)]
 #[reflect(Component)]
-pub struct Direction(pub Vec3);
+pub struct BBDirection(pub Vec3);
 
 fn spawn_balls(
     mut commands: Commands,
@@ -53,13 +53,13 @@ fn spawn_balls(
             ..Default::default()
         })
         .insert(Speed(speed))
-        .insert(Direction(direction))
+        .insert(BBDirection(direction))
         .insert(ComponentExample);
     }
 }
 
 fn move_balls(
-    mut balls: Query<(&mut Transform, &Speed, &mut Direction), With<ComponentExample>>,
+    mut balls: Query<(&mut Transform, &Speed, &mut BBDirection), With<ComponentExample>>,
     time: Res<Time>,
     world_size: Res<WorldSize>,
 ){

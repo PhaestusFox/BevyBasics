@@ -8,6 +8,8 @@ mod systems;
 mod components;
 mod entitys;
 mod resources;
+#[allow(dead_code)]
+mod query;
 
 fn main() {
     App::new()

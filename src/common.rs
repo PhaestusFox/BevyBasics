@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-pub use crate::components::{Speed, Direction as BBDirection, ComponentExample as BoxBall, WorldSize};
+pub use crate::components::{Speed, BBDirection, ComponentExample as BoxBall, WorldSize};
 pub use crate::resources::{DefaultFont, ColorSet, ColorWheel};
 
 #[derive(Component)]
@@ -16,7 +16,7 @@ impl Plugin for CommonPlugin {
         app.insert_resource(SpamTime(Timer::from_seconds(2., true)));
         app.add_system_to_stage(CoreStage::First, timer_updata);
         app.register_type::<super::components::Speed>();
-        app.register_type::<super::components::Direction>();
+        app.register_type::<super::components::BBDirection>();
         app.add_startup_system_to_stage(StartupStage::PreStartup, ui_init);
     }
 }

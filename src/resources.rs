@@ -32,6 +32,7 @@ pub struct ColorWheel(Vec<Handle<StandardMaterial>>);
 
 pub struct DefaultFont(pub Handle<Font>);
 
+#[allow(dead_code)]
 pub struct FancyFont(pub Handle<Font>);
 
 
