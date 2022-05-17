@@ -10,7 +10,8 @@ mod entitys;
 mod resources;
 #[allow(dead_code)]
 mod query;
-
+#[allow(dead_code)]
+mod local;
 fn main() {
     App::new()
     .add_plugins(DefaultPlugins)
@@ -25,6 +26,9 @@ fn main() {
     .add_plugin(components::ComponentPlugin)
     .add_plugin(entitys::EntityPlugin)
     .add_plugin(resources::ResourcePlugin)
+    .add_system(local::hello)
+    .add_system(local::hello)
+    .add_system(local::hello)
     .run()
 }
 

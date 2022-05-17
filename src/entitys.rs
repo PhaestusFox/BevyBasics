@@ -212,14 +212,14 @@ fn ball_resource_init(
     mut mesh: ResMut<Assets<Mesh>>,
 ) {
     let mut prism = Mesh::new(bevy::render::render_resource::PrimitiveTopology::TriangleStrip);
-    prism.set_attribute(Mesh::ATTRIBUTE_NORMAL, vec![[0.0, 1.0, 0.0]; 4]);
-    prism.set_attribute(Mesh::ATTRIBUTE_POSITION, vec![
+    prism.insert_attribute(Mesh::ATTRIBUTE_NORMAL, vec![[0.0, 1.0, 0.0]; 4]);
+    prism.insert_attribute(Mesh::ATTRIBUTE_POSITION, vec![
         [0.0, 0.5, 0.0],
         [0.0, -0.5, 0.5],
         [-0.5, -0.5, -0.5],
         [0.5, -0.5, -0.5],
     ]);
-    prism.set_attribute(Mesh::ATTRIBUTE_UV_0, vec![[0.0, 0.0]; 4]);
+    prism.insert_attribute(Mesh::ATTRIBUTE_UV_0, vec![[0.0, 0.0]; 4]);
     prism.set_indices(Some(bevy::render::mesh::Indices::U32(vec![0,1,2,3,0,1])));
     commands.insert_resource(BallMesh(vec![
         mesh.add(shape::Icosphere{radius: 1., subdivisions: 2}.into()),
