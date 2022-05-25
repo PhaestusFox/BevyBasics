@@ -12,6 +12,8 @@ mod resources;
 mod query;
 #[allow(dead_code)]
 mod local;
+#[allow(dead_code)]
+mod events;
 fn main() {
     App::new()
     .add_plugins(DefaultPlugins)
@@ -26,11 +28,34 @@ fn main() {
     .add_plugin(components::ComponentPlugin)
     .add_plugin(entitys::EntityPlugin)
     .add_plugin(resources::ResourcePlugin)
-    .add_system(local::hello)
-    .add_system(local::hello)
-    .add_system(local::hello)
-    .run()
+    .add_system(keycode_test)
+    .run();
+
+
+    let mut input: Axis<GamepadAxis> = Axis::default();
+
+    let val = input.get(GamepadAxis(Gamepad(0), GamepadAxisType::LeftStickX));
+
+    
+    input.set(GamepadAxis(Gamepad(0), GamepadAxisType::LeftStickX), 0.5);
+    
+    input.remove(GamepadAxis(Gamepad(0), GamepadAxisType::LeftStickX));
+
+    if val.is_some() {
+        println!("{:?}", val);
+    }
 }
+
+use bevy::input::keyboard::KeyboardInput;
+fn keycode_test(input: Res<Input<KeyCode>>, mut events: EventReader<KeyboardInput>) {
+    for key in input.get_pressed() {
+        println!("{:?}", key);
+    }
+    for event in events.iter() {
+        println!("{:?}", event);
+    }
+}
+
 
 #[derive(Component)]
 struct Cube;
