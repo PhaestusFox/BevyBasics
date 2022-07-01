@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 bevy = {version = "0.7"}
-bevy-inspector-egui = "0.10.0"
+bevy-inspector-egui = "0.11.0"
 bevy_editor_pls = {git = "https://github.com/jakobhellermann/bevy_editor_pls"}
 
 rand = "0.8.5"

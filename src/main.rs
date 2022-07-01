@@ -14,6 +14,8 @@ mod query;
 mod local;
 #[allow(dead_code)]
 mod events;
+#[allow(dead_code)]
+mod user_input;
 fn main() {
     App::new()
     .add_plugins(DefaultPlugins)
@@ -24,38 +26,13 @@ fn main() {
     .add_system(cube_move)
     .add_plugin(common::CommonPlugin)
     .add_plugin(ecs::ECSExample)
-    .add_plugin(systems::SystemPlugin)
+    //.add_plugin(systems::SystemPlugin)
     .add_plugin(components::ComponentPlugin)
     .add_plugin(entitys::EntityPlugin)
     .add_plugin(resources::ResourcePlugin)
-    .add_system(keycode_test)
+    .add_plugin(user_input::InputExample::GamepadButton)
     .run();
-
-
-    let mut input: Axis<GamepadAxis> = Axis::default();
-
-    let val = input.get(GamepadAxis(Gamepad(0), GamepadAxisType::LeftStickX));
-
-    
-    input.set(GamepadAxis(Gamepad(0), GamepadAxisType::LeftStickX), 0.5);
-    
-    input.remove(GamepadAxis(Gamepad(0), GamepadAxisType::LeftStickX));
-
-    if val.is_some() {
-        println!("{:?}", val);
-    }
 }
-
-use bevy::input::keyboard::KeyboardInput;
-fn keycode_test(input: Res<Input<KeyCode>>, mut events: EventReader<KeyboardInput>) {
-    for key in input.get_pressed() {
-        println!("{:?}", key);
-    }
-    for event in events.iter() {
-        println!("{:?}", event);
-    }
-}
-
 
 #[derive(Component)]
 struct Cube;
