@@ -1,13 +1,13 @@
 [package]
-name = "yt_main"
+name = "bevy_basics"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy = {version = "0.7"}
-bevy-inspector-egui = "0.11.0"
-bevy_editor_pls = {git = "https://github.com/jakobhellermann/bevy_editor_pls"}
+bevy = {version = "0.8.0"}
+bevy-inspector-egui = "0.12.1"
+#bevy_editor_pls = {git = "https://github.com/jakobhellermann/bevy_editor_pls"}
 
 rand = "0.8.5"

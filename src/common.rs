@@ -17,14 +17,19 @@ impl Plugin for CommonPlugin {
         app.add_system_to_stage(CoreStage::First, timer_updata);
         app.register_type::<super::components::Speed>();
         app.register_type::<super::components::BBDirection>();
-        app.add_startup_system_to_stage(StartupStage::PreStartup, ui_init);
+        app.add_event::<Events>();
+        app.add_system(reset_system);
     }
 }
 
-fn ui_init(
-    mut commands: Commands,
+fn reset_system(
+   mut events: EventWriter<Events>,
+   input: Res<Input<KeyCode>>,
 ){
-    commands.spawn_bundle(UiCameraBundle::default());
+    if input.just_pressed(KeyCode::Space) {
+        println!("send reset");
+        events.send(Events::Reset);
+    }
 }
 
 pub struct SpamTime(Timer);
@@ -40,4 +45,8 @@ fn timer_updata(
     mut timer: ResMut<SpamTime>,
 ){
     timer.0.tick(time.delta());
+}
+
+pub enum Events {
+    Reset,
 }

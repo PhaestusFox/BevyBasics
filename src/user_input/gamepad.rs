@@ -37,7 +37,7 @@ fn gamepad_button_axis(
     for button in 
     [GamepadButtonType::LeftTrigger2,
     GamepadButtonType::RightTrigger2] {
-        if let Some(val) = input.get(GamepadButton(Gamepad(0),button)) {
+        if let Some(val) = input.get(GamepadButton{gamepad: Gamepad{id:0},button_type: button}) {
             if val > DEADZONE && val < 1.0 {
                 println!("you have trigger at: {}", val);
             }
@@ -46,15 +46,16 @@ fn gamepad_button_axis(
 }
 
 const DEADZONE: f32 = 0.1;
-const AXISTYPES: [GamepadAxisType; 8] = [
-    GamepadAxisType::DPadX, GamepadAxisType::DPadY,       GamepadAxisType::LeftStickX,  GamepadAxisType::LeftStickY,
-    GamepadAxisType::LeftZ, GamepadAxisType::RightStickX, GamepadAxisType::RightStickY, GamepadAxisType::RightZ];
+const AXISTYPES: [GamepadAxisType; 6] = [
+    GamepadAxisType::LeftStickX,    GamepadAxisType::LeftStickY,
+    GamepadAxisType::LeftZ,         GamepadAxisType::RightStickX,
+    GamepadAxisType::RightStickY,   GamepadAxisType::RightZ];
 
 fn gamepad_axis(
     input: Res<Axis<GamepadAxis>>
 ){
     for axis in AXISTYPES.iter() {
-        if let Some(x) = input.get(GamepadAxis(Gamepad(0), *axis)) {
+        if let Some(x) = input.get(GamepadAxis{gamepad: Gamepad{id: 0}, axis_type: *axis}) {
             if x.abs() > DEADZONE {
                 println!("gamepad axis {:?}: {}", axis, x)
             }

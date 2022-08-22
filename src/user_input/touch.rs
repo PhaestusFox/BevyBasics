@@ -18,7 +18,9 @@ fn touch_event(
     mut touchs: EventReader<TouchInput>
 ){
     for touch in touchs.iter() {
-        println!("touch: {:?}", touch);
+        if touch.phase == bevy::input::touch::TouchPhase::Started {
+            println!("touch: {:?}", touch);
+        }
     }
 }
 

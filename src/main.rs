@@ -1,53 +1,57 @@
 use bevy::prelude::*;
-use bevy_editor_pls::*;
+//use bevy_editor_pls::*;
+use bevy_basics::prelude::*;
 
-mod common;
-
-mod ecs;
-mod systems;
-mod components;
-mod entitys;
-mod resources;
-#[allow(dead_code)]
-mod query;
-#[allow(dead_code)]
-mod local;
-#[allow(dead_code)]
-mod events;
-#[allow(dead_code)]
-mod user_input;
 fn main() {
     App::new()
+    // default stuff //
     .add_plugins(DefaultPlugins)
-    .add_plugin(EditorPlugin)
+    //.add_plugin(EditorPlugin)
     .add_plugin(bevy::diagnostic::FrameTimeDiagnosticsPlugin)
     .add_plugin(bevy::diagnostic::EntityCountDiagnosticsPlugin)
-    .add_startup_system(startup_system)
+    .add_plugin(CommonPlugin)
+    .add_startup_system(spawn_cam)
+    // end default stuff //
+    
+    // comment in the examples you want //
     .add_system(cube_move)
-    .add_plugin(common::CommonPlugin)
-    .add_plugin(ecs::ECSExample)
-    //.add_plugin(systems::SystemPlugin)
-    .add_plugin(components::ComponentPlugin)
-    .add_plugin(entitys::EntityPlugin)
-    .add_plugin(resources::ResourcePlugin)
-    .add_plugin(user_input::InputExample::GamepadButton)
+    .add_startup_system(startup_system)
+    // .add_plugin(ECSExample)
+    // .add_plugin(SystemPlugin)
+    // .add_plugin(ComponentPlugin)
+    // .add_plugin(EntityPlugin)
+    // .add_plugin(ResourcePlugin)
+    // .add_plugin(InputExample::TouchEvent)
+    .add_plugin(TransformExample)
+    .add_plugin(VisibilityExample(0))
+    
     .run();
 }
 
 #[derive(Component)]
 struct Cube;
 
+pub fn spawn_cam(
+    mut commands: Commands,
+) {
+    let trans = Transform::from_xyz(5., 5., 5.);
+    commands.spawn_bundle(Camera3dBundle {
+        transform: trans.looking_at(Vec3::ZERO, Vec3::Y),
+        ..Default::default()
+    })
+    .insert(MainCamera);
+    commands.spawn_bundle(SpotLightBundle{
+        transform: trans.looking_at(Vec3::ZERO, Vec3::Y),
+        ..Default::default()
+    });
+}
+
+#[allow(dead_code)]
 fn startup_system(
     mut commands: Commands,
     mut mesh_assets: ResMut<Assets<Mesh>>,
     mut materials_asstes: ResMut<Assets<StandardMaterial>>,
 ){
-    let mut cam = PerspectiveCameraBundle::new_3d();
-    cam.transform.translation = Vec3::ONE * 5.0;
-    cam.transform.look_at(Vec3::ZERO, Vec3::Y);
-    commands.spawn_bundle(cam)
-    .insert(common::MainCamera);
-
     commands.spawn_bundle(PbrBundle{
         mesh: mesh_assets.add(Mesh::from(shape::Cube { size: 1.0 })),
         material: materials_asstes.add(StandardMaterial {
@@ -58,6 +62,7 @@ fn startup_system(
     }).insert(Cube);
 }
 
+#[allow(dead_code)]
 fn cube_move(
     input: Res<Input<KeyCode>>,
     mut cubes: Query<&mut Transform, With<Cube>>
