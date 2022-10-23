@@ -1,12 +1,12 @@
 use bevy::prelude::*;
-//use bevy_editor_pls::*;
+use bevy_editor_pls::*;
 use bevy_basics::prelude::*;
 
 fn main() {
     App::new()
     // default stuff //
     .add_plugins(DefaultPlugins)
-    //.add_plugin(EditorPlugin)
+    .add_plugin(EditorPlugin)
     .add_plugin(bevy::diagnostic::FrameTimeDiagnosticsPlugin)
     .add_plugin(bevy::diagnostic::EntityCountDiagnosticsPlugin)
     .add_plugin(CommonPlugin)
@@ -22,9 +22,10 @@ fn main() {
     // .add_plugin(EntityPlugin)
     // .add_plugin(ResourcePlugin)
     // .add_plugin(InputExample::TouchEvent)
-    .add_plugin(TransformExample)
-    .add_plugin(VisibilityExample(0))
-    
+    // .add_plugin(TransformExample)
+    // .add_plugin(VisibilityExample(0))
+    //.add_plugin(ReflectExample)
+    .add_plugin(ScenesExample)
     .run();
 }
 

@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 mod common;
-
+pub use prelude::*;
 pub mod prelude {
     pub use super::{
         common::*,
@@ -14,9 +14,12 @@ pub mod prelude {
         ecs::ECSExample,
         components::ComponentPlugin,
         resources::ResourcePlugin,
+        reflect::ReflectExample,
+        scenes::ScenesExample,
     };
 }
 
+mod reflect;
 mod ecs;
 mod systems;
 mod components;
@@ -32,6 +35,7 @@ mod events;
 mod user_input;
 mod transform;
 mod visibility;
+mod scenes;
 pub fn spawn_cam(
     mut commands: Commands,
 ) {
