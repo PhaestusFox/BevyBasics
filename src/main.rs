@@ -34,12 +34,12 @@ struct Cube;
 pub fn spawn_cam(mut commands: Commands) {
     let trans = Transform::from_xyz(5., 5., 5.);
     commands
-        .spawn_bundle(Camera3dBundle {
+        .spawn(Camera3dBundle {
             transform: trans.looking_at(Vec3::ZERO, Vec3::Y),
             ..Default::default()
         })
         .insert(MainCamera);
-    commands.spawn_bundle(SpotLightBundle {
+    commands.spawn(SpotLightBundle {
         transform: trans.looking_at(Vec3::ZERO, Vec3::Y),
         ..Default::default()
     });
@@ -52,7 +52,7 @@ fn startup_system(
     mut materials_asstes: ResMut<Assets<StandardMaterial>>,
 ) {
     commands
-        .spawn_bundle(PbrBundle {
+        .spawn(PbrBundle {
             mesh: mesh_assets.add(Mesh::from(shape::Cube { size: 1.0 })),
             material: materials_asstes.add(StandardMaterial {
                 base_color: Color::rgb(1.0, 0.5, 0.5),

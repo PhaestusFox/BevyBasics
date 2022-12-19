@@ -43,7 +43,7 @@ fn spawn_ball(
     let start = camera.single().clone();
     let direction = start.looking_at(Vec3::ZERO, Vec3::Y).forward();
     let ball = commands
-        .spawn_bundle(PbrBundle {
+        .spawn(PbrBundle {
             mesh: mesh.0[0].clone(),
             material: matt.get_color(ColorSet::Random, 0),
             transform: start,
@@ -162,7 +162,7 @@ fn spawn_ball_ui(mut commands: Commands, font: Res<DefaultFont>) {
     let mut color = Entity::from_raw(0);
     let mut speed = Entity::from_raw(0);
     commands
-        .spawn_bundle(NodeBundle {
+        .spawn(NodeBundle {
             style: Style {
                 size: Size::new(Val::Px(300.), Val::Px(100.)),
                 ..Default::default()
@@ -172,7 +172,7 @@ fn spawn_ball_ui(mut commands: Commands, font: Res<DefaultFont>) {
         })
         .with_children(|p| {
             color = p
-                .spawn_bundle(TextBundle {
+                .spawn(TextBundle {
                     style: Style {
                         size: Size::new(Val::Px(300.), Val::Px(30.)),
                         ..Default::default()
@@ -205,7 +205,7 @@ fn spawn_ball_ui(mut commands: Commands, font: Res<DefaultFont>) {
                 })
                 .id();
             speed = p
-                .spawn_bundle(TextBundle {
+                .spawn(TextBundle {
                     style: Style {
                         size: Size::new(Val::Px(300.), Val::Px(30.)),
                         ..Default::default()

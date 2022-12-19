@@ -79,7 +79,7 @@ fn spawn_cube(
     let mut last = Entity::from_raw(0);
     for i in 0..10 {
         let e = commands
-            .spawn_bundle(PbrBundle {
+            .spawn(PbrBundle {
                 transform: Transform::from_xyz(0., if i == 0 { -2.5 } else { 0.5 }, 0.),
                 mesh: meshs.add(shape::Cube { size: 0.5 }.into()),
                 material: materials.add(CUBE_COLORS[i].into()),

@@ -157,13 +157,13 @@ fn spawn_scene_bundle(
         };
         if pressed < 10 {
             if input.pressed(KeyCode::A) {
-                commands.spawn_bundle(SceneBundle {
+                commands.spawn(SceneBundle {
                     scene: scenes.0[pressed].clone(),
                     ..Default::default()
                 });
             } else if input.pressed(KeyCode::D) {
                 commands
-                    .spawn_bundle(SpatialBundle::default())
+                    .spawn(SpatialBundle::default())
                     .insert(scenes.0[pressed].clone());
             }
         }
@@ -202,9 +202,7 @@ fn gltf_scene(
 }
 
 //Video 2///////////////////////////////////////////////////////////////////////////
-use bevy::reflect::TypeRegistry;
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, HashSet};
 #[derive(Component, Reflect, Serialize, Deserialize, Default)]
 #[reflect(Component, Serialize, Deserialize)]
 struct SceneItem;
@@ -222,7 +220,7 @@ fn spawn_scene_cube(
         return;
     }
     commands
-        .spawn_bundle(PbrBundle {
+        .spawn(PbrBundle {
             mesh: asset_server.load("gltf.gltf#Mesh0/Primitive0"),
             ..Default::default()
         })
@@ -265,12 +263,10 @@ fn advanced_save_scene(input: Res<Input<KeyCode>>, world: &World, query: Query<E
         return;
     }
     info!("saving advanced scene");
-    // collect entites that are part of the scene into a hashset
-    let query: HashSet<Entity> = query.iter().collect();
-    // crate a dynamic scene for the world and type registry only including entitys from the entity set
-    let dynamic_scene = from_world(world, &type_registry, query);
+    let mut scene = DynamicSceneBuilder::from_world(world);
+    scene.extract_entities(query.iter());
     // save the scene to disk
-    let string = dynamic_scene.serialize_ron(&type_registry).unwrap();
+    let string = scene.build().serialize_ron(&type_registry).unwrap();
     let _ = std::fs::write("./assets/advanced_scene.scn.ron", string).unwrap();
 }
 
@@ -294,19 +290,11 @@ fn simple_save_scene(
 /// Create a new dynamic scene from a given world and etity set;
 fn from_world(
     world: &World,
-    type_registry: &TypeRegistry,
-    entitys: HashSet<Entity>,
+    entitys: impl Iterator<Item = Entity>,
 ) -> DynamicScene {
     let mut scene = DynamicSceneBuilder::from_world(world);
-    scene.extract_entities(entitys.into_iter());
+    scene.extract_entities(entitys);
     scene.build()
-}
-
-fn test(
-    mut assets: ResMut<Assets<Mesh>>,
-) {
-    let id = bevy::asset::HandleId::new(<Mesh as bevy::reflect::TypeUuid>::TYPE_UUID, 42069u64);
-    let handle = assets.set(id, shape::Box::new(1., 1., 1.).into());
 }
 
 // fn spawn_scene(

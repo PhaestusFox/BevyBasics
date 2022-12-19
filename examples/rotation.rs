@@ -22,6 +22,7 @@ struct Cube;
 
 const MOVES: usize = 3;
 
+#[derive(Resource)]
 struct Directions {
     z: UiImage,
     y: UiImage,
@@ -51,7 +52,7 @@ fn spawn_world(
         .into(),
     );
     let top = commands
-        .spawn_bundle(PbrBundle {
+        .spawn(PbrBundle {
             transform: Transform::from_translation(Vec3::Y).with_rotation(Quat::from_euler(
                 EulerRot::XYZ,
                 -90f32.to_radians(),
@@ -64,7 +65,7 @@ fn spawn_world(
         })
         .id();
     let bottom = commands
-        .spawn_bundle(PbrBundle {
+        .spawn(PbrBundle {
             transform: Transform::from_translation(-Vec3::Y).with_rotation(Quat::from_euler(
                 EulerRot::XYZ,
                 90f32.to_radians(),
@@ -77,7 +78,7 @@ fn spawn_world(
         })
         .id();
     let left = commands
-        .spawn_bundle(PbrBundle {
+        .spawn(PbrBundle {
             transform: Transform::from_translation(-Vec3::X).with_rotation(Quat::from_euler(
                 EulerRot::YXZ,
                 -90f32.to_radians(),
@@ -90,7 +91,7 @@ fn spawn_world(
         })
         .id();
     let right = commands
-        .spawn_bundle(PbrBundle {
+        .spawn(PbrBundle {
             transform: Transform::from_translation(Vec3::X).with_rotation(Quat::from_euler(
                 EulerRot::YXZ,
                 90f32.to_radians(),
@@ -103,7 +104,7 @@ fn spawn_world(
         })
         .id();
     let back = commands
-        .spawn_bundle(PbrBundle {
+        .spawn(PbrBundle {
             transform: Transform::from_translation(-Vec3::Z).with_rotation(Quat::from_euler(
                 EulerRot::YXZ,
                 -180f32.to_radians(),
@@ -116,7 +117,7 @@ fn spawn_world(
         })
         .id();
     let frunt = commands
-        .spawn_bundle(PbrBundle {
+        .spawn(PbrBundle {
             transform: Transform::from_translation(Vec3::Z).with_rotation(Quat::from_euler(
                 EulerRot::ZXY,
                 90f32.to_radians(),
@@ -129,7 +130,7 @@ fn spawn_world(
         })
         .id();
     commands
-        .spawn_bundle(SpatialBundle::default())
+        .spawn(SpatialBundle::default())
         .insert(Cube)
         .push_children(&[top, bottom, left, right, frunt, back]);
     let arrow_image: UiImage = asset_server.load("arrow.png").into();
@@ -139,7 +140,7 @@ fn spawn_world(
         z: asset_server.load("Z.png").into(),
     };
     let ui = commands
-        .spawn_bundle(NodeBundle {
+        .spawn(NodeBundle {
             style: Style {
                 size: Size {
                     width: Val::Px((77 * MOVES) as f32),
@@ -160,7 +161,7 @@ fn spawn_world(
             let mut ui = UIElements([Entity::from_bits(u64::MAX); MOVES]);
             for i in 0..ui.0.len() {
                 ui.0[i] = p
-                    .spawn_bundle(NodeBundle {
+                    .spawn(NodeBundle {
                         style: Style {
                             size: Size {
                                 width: Val::Px(75.0),
@@ -173,7 +174,7 @@ fn spawn_world(
                     })
                     .insert(Name::new(format!("Slot {}", i)))
                     .with_children(|p| {
-                        p.spawn_bundle(ImageBundle {
+                        p.spawn(ImageBundle {
                             image: arrow_image.clone(),
                             style: Style {
                                 size: Size {
@@ -184,7 +185,7 @@ fn spawn_world(
                             },
                             ..Default::default()
                         });
-                        p.spawn_bundle(ImageBundle {
+                        p.spawn(ImageBundle {
                             image: arrow_image.clone(),
                             style: Style {
                                 size: Size {
@@ -213,7 +214,7 @@ fn change_state(
 ) {
     if input.just_pressed(KeyCode::Space) {
         for mut transform in transforms.iter_mut() {
-            *transform = Transform::identity();
+            *transform = Transform::IDENTITY;
         }
         commands.remove_resource::<Run>();
         return;
@@ -231,6 +232,7 @@ enum Axis {
 #[derive(Component, Clone, Copy)]
 struct Arrow(bool);
 
+#[derive(Resource)]
 struct Order([(Axis, Arrow); MOVES]);
 impl Order {
     fn as_vec3(&self, index: usize) -> Vec3 {
@@ -264,6 +266,7 @@ impl Default for Order {
         Order([(Axis::X, Arrow(true)); MOVES])
     }
 }
+#[derive(Resource)]
 struct Run;
 
 fn add_move(
@@ -317,7 +320,7 @@ fn set_arrow(index: usize, order: &mut Order, to: bool) {
     order.0[index].1 .0 = to;
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Resource)]
 struct UIElements([Entity; MOVES]);
 
 fn update_ui(elements: Res<UIElements>, order: Res<Order>, mut commands: Commands) {
@@ -325,7 +328,7 @@ fn update_ui(elements: Res<UIElements>, order: Res<Order>, mut commands: Command
         return;
     }
     for i in 0..MOVES {
-        commands.entity(elements.0[i]).insert_bundle(order.0[i]);
+        commands.entity(elements.0[i]).insert(order.0[i]);
     }
 }
 
@@ -372,7 +375,7 @@ fn set_ui_letter(
     }
 }
 
-#[derive(Debug, DerefMut, Deref)]
+#[derive(Debug, DerefMut, Deref, Resource)]
 struct Selected(usize);
 
 #[derive(Component)]
@@ -381,7 +384,7 @@ struct Select;
 fn update_select(
     selected: Res<Selected>,
     ui: Res<UIElements>,
-    mut query: Query<&mut UiColor>,
+    mut query: Query<&mut BackgroundColor>,
     mut old: Local<usize>,
 ) {
     if selected.is_changed() {

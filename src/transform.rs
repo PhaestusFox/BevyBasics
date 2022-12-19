@@ -94,7 +94,7 @@ fn spawn_cube(
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     commands
-        .spawn_bundle(PbrBundle {
+        .spawn(PbrBundle {
             mesh: meshs.add(shape::Cube { size: 1. }.into()),
             material: materials.add(Color::ORANGE_RED.into()),
             transform: Transform::from_xyz(0., 1., 0.),
@@ -102,7 +102,7 @@ fn spawn_cube(
         })
         .insert(TransformExample)
         .with_children(|p| {
-            p.spawn_bundle(PbrBundle {
+            p.spawn(PbrBundle {
                 mesh: meshs.add(shape::Cube { size: 1. }.into()),
                 material: materials.add(Color::ALICE_BLUE.into()),
                 transform: Transform::from_xyz(0., 1., 0.),

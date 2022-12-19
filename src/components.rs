@@ -49,7 +49,7 @@ fn spawn_balls(
             ..Default::default()
         });
         commands
-            .spawn_bundle(PbrBundle {
+            .spawn((PbrBundle {
                 mesh: mesh.clone(),
                 material,
                 transform: Transform::from_translation(Vec3::new(
@@ -59,10 +59,11 @@ fn spawn_balls(
                 ))
                 .with_scale(Vec3::ONE * size),
                 ..Default::default()
-            })
-            .insert(Speed(speed))
-            .insert(BBDirection(direction))
-            .insert(ComponentExample);
+            },
+            Speed(speed),
+            BBDirection(direction),
+            ComponentExample,
+            ));
     }
 }
 

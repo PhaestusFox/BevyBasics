@@ -80,7 +80,7 @@ fn list_gamepads(gamepads: Res<Gamepads>, time: Res<Time>, mut delta: Local<f32>
     if *delta < 1.0 {
         return;
     }
-    let gamepads: Vec<&Gamepad> = gamepads.iter().collect();
+    let gamepads: Vec<Gamepad> = gamepads.iter().collect();
     if gamepads.len() == 0 {
         println!("there are no gamepads connected");
         return;
