@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
-pub use crate::components::{Speed, BBDirection, ComponentExample as BoxBall, WorldSize};
-pub use crate::resources::{DefaultFont, ColorSet, ColorWheel};
+pub use crate::components::{BBDirection, ComponentExample as BoxBall, Speed, WorldSize};
+pub use crate::resources::{ColorSet, ColorWheel, DefaultFont};
 
 #[derive(Component)]
 pub struct MainCamera;
@@ -13,7 +13,7 @@ pub struct CommonPlugin;
 
 impl Plugin for CommonPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(SpamTime(Timer::from_seconds(2., true)));
+        app.insert_resource(SpamTime(Timer::from_seconds(2., TimerMode::Repeating)));
         app.add_system_to_stage(CoreStage::First, timer_updata);
         app.register_type::<super::components::Speed>();
         app.register_type::<super::components::BBDirection>();
@@ -22,16 +22,14 @@ impl Plugin for CommonPlugin {
     }
 }
 
-fn reset_system(
-   mut events: EventWriter<Events>,
-   input: Res<Input<KeyCode>>,
-){
+fn reset_system(mut events: EventWriter<Events>, input: Res<Input<KeyCode>>) {
     if input.just_pressed(KeyCode::Space) {
         println!("send reset");
         events.send(Events::Reset);
     }
 }
 
+#[derive(Resource)]
 pub struct SpamTime(Timer);
 
 impl SpamTime {
@@ -40,10 +38,7 @@ impl SpamTime {
     }
 }
 
-fn timer_updata(
-    time: Res<Time>,
-    mut timer: ResMut<SpamTime>,
-){
+fn timer_updata(time: Res<Time>, mut timer: ResMut<SpamTime>) {
     timer.0.tick(time.delta());
 }
 

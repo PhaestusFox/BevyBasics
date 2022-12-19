@@ -1,4 +1,7 @@
-use bevy::{prelude::*, reflect::{TypeRegistry, GetPath}};
+use bevy::{
+    prelude::*,
+    reflect::{GetPath, TypeRegistry},
+};
 
 pub struct ReflectExample;
 
@@ -31,7 +34,7 @@ struct ReflectStructPath {
 enum ReflectEnum {
     Variant0,
     Variant1(String),
-    Variant2(usize)
+    Variant2(usize),
 }
 
 #[derive(Debug, Reflect, Clone, bevy::reflect::FromReflect)]
@@ -51,7 +54,7 @@ fn get_field_by_name() {
     };
     let obj = hard_type.as_reflect();
     let name = "filed_0";
-    let filed = if let ReflectRef::Struct(data) = obj.reflect_ref() {
+    let _filed = if let ReflectRef::Struct(data) = obj.reflect_ref() {
         //Some(&T) if it has field with this name
         //None if field is not of type T
         data.get_field::<usize>(name)
@@ -61,7 +64,7 @@ fn get_field_by_name() {
     };
     //or
     let name = "filed_1";
-    let filed = if let ReflectRef::Struct(data) = obj.reflect_ref() {
+    let _filed = if let ReflectRef::Struct(data) = obj.reflect_ref() {
         //Some(&T) if it has field with this name
         //None if field is not of type T
         data.get_field::<usize>(name)
@@ -86,9 +89,21 @@ fn patch_struct() {
 
 fn path_get() {
     let top = ReflectStructPath {
-        filed_0: ReflectStruct { filed_0: 0, filed_1: 1, filed_2: ReflectEnum::Variant0 },
-        filed_1: ReflectStruct { filed_0: 2, filed_1: 3, filed_2: ReflectEnum::Variant1("One".into()) },
-        filed_2: ReflectStruct { filed_0: 4, filed_1: 5, filed_2: ReflectEnum::Variant2(2) }
+        filed_0: ReflectStruct {
+            filed_0: 0,
+            filed_1: 1,
+            filed_2: ReflectEnum::Variant0,
+        },
+        filed_1: ReflectStruct {
+            filed_0: 2,
+            filed_1: 3,
+            filed_2: ReflectEnum::Variant1("One".into()),
+        },
+        filed_2: ReflectStruct {
+            filed_0: 4,
+            filed_1: 5,
+            filed_2: ReflectEnum::Variant2(2),
+        },
     };
     if let Ok(val) = top.get_path::<usize>("filed_0.filed_1") {
         assert_eq!(*val, 1);
@@ -115,7 +130,7 @@ fn iterator() {
                 if val.is::<usize>() {
                     *val.downcast_mut::<usize>().unwrap() += 1;
                 }
-            },
+            }
             ReflectMut::Struct(struct_data) => {
                 for field in 0..struct_data.field_len() {
                     let field = struct_data.field_at_mut(field).unwrap();
@@ -123,8 +138,8 @@ fn iterator() {
                         *field.downcast_mut::<usize>().unwrap() += 1;
                     }
                 }
-            },
-            _ => todo!()
+            }
+            _ => todo!(),
         }
     }
     add_one(zero.as_reflect_mut());
@@ -143,7 +158,7 @@ fn reflect_trait() {
     let hard_type = ReflectStruct {
         filed_0: 0,
         filed_1: 0,
-        filed_2: ReflectEnum::Variant0
+        filed_2: ReflectEnum::Variant0,
     };
     let obj = hard_type.as_reflect();
     let info = type_registure.get(obj.type_id()).unwrap();
@@ -156,8 +171,8 @@ fn reflect_trait() {
 #[test]
 fn serialize() {
     let mut world = World::default();
-    world.spawn().insert(Transform::default());
-    let type_registry = TypeRegistry::default();
+    world.spawn(Transform::default());
+    let type_registry = AppTypeRegistry::default();
     {
         let mut type_registry = type_registry.write();
         type_registry.register::<Transform>();
@@ -173,9 +188,21 @@ fn serialize() {
 
 fn scripting() {
     let mut data = ReflectStructPath {
-        filed_0: ReflectStruct { filed_0: 0, filed_1: 1, filed_2: ReflectEnum::Variant0 },
-        filed_1: ReflectStruct { filed_0: 2, filed_1: 3, filed_2: ReflectEnum::Variant1("One".into()) },
-        filed_2: ReflectStruct { filed_0: 4, filed_1: 5, filed_2: ReflectEnum::Variant2(2) }
+        filed_0: ReflectStruct {
+            filed_0: 0,
+            filed_1: 1,
+            filed_2: ReflectEnum::Variant0,
+        },
+        filed_1: ReflectStruct {
+            filed_0: 2,
+            filed_1: 3,
+            filed_2: ReflectEnum::Variant1("One".into()),
+        },
+        filed_2: ReflectStruct {
+            filed_0: 4,
+            filed_1: 5,
+            filed_2: ReflectEnum::Variant2(2),
+        },
     };
     let user_script = "filed_0.filed_1 = 0";
     let mut word = user_script.split(' ');
@@ -185,14 +212,14 @@ fn scripting() {
     if let (Some(path), Some(op), Some(val)) = (filed, op, val) {
         let val: usize = val.parse().unwrap();
         if let Ok(old) = data.get_path_mut::<usize>(path) {
-        match op {
-            "=" => {
+            match op {
+                "=" => {
                     *old = val;
-                },
+                }
                 "+" => {
                     *old += val;
                 }
-                _ => todo!()
+                _ => todo!(),
             }
         }
     }
@@ -209,46 +236,85 @@ impl DoThing for ReflectStruct {
 }
 
 // seems to be named AppTypeRegistry on the main branch
-fn your_system(
-    registry: Res<TypeRegistry>
-) {
+fn your_system(registry: Res<AppTypeRegistry>) {
     use std::any::TypeId;
     let registry = registry.read();
     if let Some(info) = registry.get(TypeId::of::<ReflectStruct>()) {
         println!("name: {}", info.short_name());
         println!("type info: {:?}", info.type_info());
         println!("type data: {:?}", info.data::<ReflectSerialize>().is_some());
-        let array = [ReflectEnum2::Value0, ReflectEnum2::Value1, ReflectEnum2::Value2];
-        let array = array.as_reflect();
-        let list = vec![ReflectEnum2::Value0, ReflectEnum2::Value1, ReflectEnum2::Value2];
-        let list = list.as_reflect();
-        let d_struct = bevy::reflect::DynamicStruct::default();
+        let array = [
+            ReflectEnum2::Value0,
+            ReflectEnum2::Value1,
+            ReflectEnum2::Value2,
+        ];
+        let _array = array.as_reflect();
+        let list = vec![
+            ReflectEnum2::Value0,
+            ReflectEnum2::Value1,
+            ReflectEnum2::Value2,
+        ];
+        let _list = list.as_reflect();
+        let _d_struct = bevy::reflect::DynamicStruct::default();
         let data = info.data::<ReflectSerialize>();
         let d = if let Some(data) = data {
-            let reflect: Box<dyn Reflect> = Box::new(ReflectStruct{filed_0: 10, filed_1: 0, filed_2: ReflectEnum::Variant1("Test".to_string())});
+            let reflect: Box<dyn Reflect> = Box::new(ReflectStruct {
+                filed_0: 10,
+                filed_1: 0,
+                filed_2: ReflectEnum::Variant1("Test".to_string()),
+            });
             let s = data.get_serializable(&*reflect);
-            if let Ok(val) = ron::ser::to_string_pretty(s.borrow(), ron::ser::PrettyConfig::default()) {
+            if let Ok(val) =
+                ron::ser::to_string_pretty(s.borrow(), ron::ser::PrettyConfig::default())
+            {
                 println!("serialzie: {}", val);
                 val
-            } else {return;}
-        } else {return;};
-        let de = if let Some(de) = info.data::<ReflectDeserialize>() {de} else {println!("no deserialize"); return;};
-        let mut d = if let Ok(d) = ron::de::Deserializer::from_str(&d) {d} else {println!("ron deserializer failed"); return;};
-        let val = if let Ok(val) = de.deserialize(&mut d) {val} else {println!("deserialize failed"); return;};
+            } else {
+                return;
+            }
+        } else {
+            return;
+        };
+        let de = if let Some(de) = info.data::<ReflectDeserialize>() {
+            de
+        } else {
+            println!("no deserialize");
+            return;
+        };
+        let mut d = if let Ok(d) = ron::de::Deserializer::from_str(&d) {
+            d
+        } else {
+            println!("ron deserializer failed");
+            return;
+        };
+        let val = if let Ok(val) = de.deserialize(&mut d) {
+            val
+        } else {
+            println!("deserialize failed");
+            return;
+        };
         match val.reflect_ref() {
-            bevy::reflect::ReflectRef::Struct(info) => for (i,v) in info.iter_fields().enumerate() {
-                println!("{:?}:{:?}", info.name_at(i), v);
-            },
+            bevy::reflect::ReflectRef::Struct(info) => {
+                for (i, v) in info.iter_fields().enumerate() {
+                    println!("{:?}:{:?}", info.name_at(i), v);
+                }
+            }
             bevy::reflect::ReflectRef::TupleStruct(_) => todo!(),
             bevy::reflect::ReflectRef::Tuple(_) => todo!(),
             bevy::reflect::ReflectRef::List(_) => todo!(),
             bevy::reflect::ReflectRef::Array(_) => todo!(),
             bevy::reflect::ReflectRef::Map(_) => todo!(),
             bevy::reflect::ReflectRef::Value(_) => todo!(),
+            bevy::reflect::ReflectRef::Enum(_) => todo!(),
         }
         let name = val.get_path::<ReflectEnum>("filed_2");
         println!("{:?}", name);
-        let val: ReflectStruct = if let Ok(val) = val.take() {val} else {println!("downcast failed"); return;};
+        let val: ReflectStruct = if let Ok(val) = val.take() {
+            val
+        } else {
+            println!("downcast failed");
+            return;
+        };
         println!("{:?}", val)
     }
 }

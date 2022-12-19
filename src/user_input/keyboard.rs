@@ -1,49 +1,43 @@
-use bevy::prelude::*;
 use super::InputExample;
+use bevy::prelude::*;
 
 pub struct KeyboardExample;
 impl Plugin for KeyboardExample {
     fn build(&self, app: &mut App) {
-        app
-        .add_system_set(
-            SystemSet::on_update(InputExample::Keyboard)
-            .with_system(keycode_test)
-        );
+        app.add_system_set(SystemSet::on_update(InputExample::Keyboard).with_system(keycode_test));
     }
 }
 
 fn key_press(input: Res<Input<KeyCode>>) {
-
     if input.just_pressed(KeyCode::Space) {
         //Jump
     }
-
 }
 
 fn input(input: Res<Input<KeyCode>>) {
-
     for key in input.get_pressed() {
-    match key {
-        KeyCode::A => {
-            //left
-        },
-        KeyCode::W => {
-            //forward
-        },
-        KeyCode::S => {
-            //back
-        },
-        KeyCode::D => {
-            //right
-        },
-        _ => {}
-    }
+        match key {
+            KeyCode::A => {
+                //left
+            }
+            KeyCode::W => {
+                //forward
+            }
+            KeyCode::S => {
+                //back
+            }
+            KeyCode::D => {
+                //right
+            }
+            _ => {}
+        }
     }
 }
 
 fn multi_key(input: Res<Input<KeyCode>>) {
-    if input.just_pressed(KeyCode::Space) && 
-    input.any_pressed([KeyCode::A, KeyCode::D, KeyCode::W, KeyCode::S]) {
+    if input.just_pressed(KeyCode::Space)
+        && input.any_pressed([KeyCode::A, KeyCode::D, KeyCode::W, KeyCode::S])
+    {
         //moving jump
     }
 }
@@ -69,13 +63,9 @@ fn keycode_test(input: Res<Input<KeyCode>>, mut events: EventReader<KeyboardInpu
     }
 }
 
-
 #[derive(Debug, Component)]
 struct Player;
-fn player_controler(
-    mut player: Query<&mut Transform, With<Player>>,
-    input: Res<Input<KeyCode>>,
-){
+fn player_controler(mut player: Query<&mut Transform, With<Player>>, input: Res<Input<KeyCode>>) {
     let mut player = player.single_mut();
     if input.any_pressed([KeyCode::W, KeyCode::Up, KeyCode::Numpad8]) {
         player.translation.y += 1.

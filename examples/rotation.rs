@@ -139,55 +139,64 @@ fn spawn_world(
         z: asset_server.load("Z.png").into(),
     };
     let ui = commands
-    .spawn_bundle(NodeBundle{
-        style: Style {
-            size: Size {
-                width: Val::Px((77 * MOVES) as f32),
-                height: Val::Px(52.0),
-            },
-            margin: UiRect{
-                left: Val::Auto,
-                right: Val::Auto,
-                bottom: Val::Px(10.),
-                top: Val::Undefined
+        .spawn_bundle(NodeBundle {
+            style: Style {
+                size: Size {
+                    width: Val::Px((77 * MOVES) as f32),
+                    height: Val::Px(52.0),
+                },
+                margin: UiRect {
+                    left: Val::Auto,
+                    right: Val::Auto,
+                    bottom: Val::Px(10.),
+                    top: Val::Undefined,
+                },
+                ..Default::default()
             },
             ..Default::default()
-        },
-        ..Default::default()
-    })
-    .insert(Name::new("UI Bar"))
-    .add_children(|p| {
+        })
+        .insert(Name::new("UI Bar"))
+        .add_children(|p| {
             let mut ui = UIElements([Entity::from_bits(u64::MAX); MOVES]);
             for i in 0..ui.0.len() {
-                ui.0[i] = p.spawn_bundle(NodeBundle {
-                    style: Style {
-                        size: Size { width: Val::Px(75.0), height: Val::Px(50.) },
-                        padding: UiRect::all(Val::Px(1.0)),
+                ui.0[i] = p
+                    .spawn_bundle(NodeBundle {
+                        style: Style {
+                            size: Size {
+                                width: Val::Px(75.0),
+                                height: Val::Px(50.),
+                            },
+                            padding: UiRect::all(Val::Px(1.0)),
+                            ..Default::default()
+                        },
                         ..Default::default()
-                    },
-                    ..Default::default()
-                })
-                .insert(Name::new(format!("Slot {}", i)))
-                .with_children(|p| {
-                    p
-                        .spawn_bundle(ImageBundle {
+                    })
+                    .insert(Name::new(format!("Slot {}", i)))
+                    .with_children(|p| {
+                        p.spawn_bundle(ImageBundle {
                             image: arrow_image.clone(),
                             style: Style {
-                                size: Size { width: Val::Px(25.), height: Val::Px(50.) },
+                                size: Size {
+                                    width: Val::Px(25.),
+                                    height: Val::Px(50.),
+                                },
                                 ..Default::default()
                             },
                             ..Default::default()
                         });
-                    p
-                        .spawn_bundle(ImageBundle {
+                        p.spawn_bundle(ImageBundle {
                             image: arrow_image.clone(),
                             style: Style {
-                                size: Size { width: Val::Px(50.), height: Val::Px(50.) },
+                                size: Size {
+                                    width: Val::Px(50.),
+                                    height: Val::Px(50.),
+                                },
                                 ..Default::default()
                             },
                             ..Default::default()
                         });
-                }).id();
+                    })
+                    .id();
             }
             ui
         });
@@ -226,15 +235,33 @@ struct Order([(Axis, Arrow); MOVES]);
 impl Order {
     fn as_vec3(&self, index: usize) -> Vec3 {
         match self.0[index].0 {
-            Axis::X => if self.0[index].1.0 {Vec3::NEG_X} else {Vec3::X},
-            Axis::Y => if self.0[index].1.0 {Vec3::NEG_Y} else {Vec3::Y},
-            Axis::Z => if self.0[index].1.0 {Vec3::NEG_Z} else {Vec3::Z},
+            Axis::X => {
+                if self.0[index].1 .0 {
+                    Vec3::NEG_X
+                } else {
+                    Vec3::X
+                }
+            }
+            Axis::Y => {
+                if self.0[index].1 .0 {
+                    Vec3::NEG_Y
+                } else {
+                    Vec3::Y
+                }
+            }
+            Axis::Z => {
+                if self.0[index].1 .0 {
+                    Vec3::NEG_Z
+                } else {
+                    Vec3::Z
+                }
+            }
         }
     }
 }
 impl Default for Order {
     fn default() -> Self {
-        Order([(Axis::X, Arrow(true));MOVES])
+        Order([(Axis::X, Arrow(true)); MOVES])
     }
 }
 struct Run;
@@ -242,42 +269,39 @@ struct Run;
 fn add_move(
     mut selected: ResMut<Selected>,
     mut order: ResMut<Order>,
-    input: Res<Input<KeyCode>>, 
-    runing: Option<Res<Run>>
+    input: Res<Input<KeyCode>>,
+    runing: Option<Res<Run>>,
 ) {
-    if runing.is_some() {return;}
+    if runing.is_some() {
+        return;
+    }
     for key in input.get_just_pressed() {
         match key {
-            KeyCode::A |
-            KeyCode::Left => {
+            KeyCode::A | KeyCode::Left => {
                 if selected.0 == 0 {
                     selected.0 = MOVES - 1;
                 } else {
                     selected.0 -= 1;
                 }
-            },
-            KeyCode::D |
-            KeyCode::Right => {
+            }
+            KeyCode::D | KeyCode::Right => {
                 selected.0 = (selected.0 + 1) % MOVES;
-            },
-            KeyCode::W |
-            KeyCode::Up => {
+            }
+            KeyCode::W | KeyCode::Up => {
                 set_arrow(selected.0, &mut order, true);
-            },
-            KeyCode::S |
-            KeyCode::Down => {
+            }
+            KeyCode::S | KeyCode::Down => {
                 set_arrow(selected.0, &mut order, false);
-            },
+            }
             KeyCode::Z => {
                 set_axis(selected.0, &mut order, Axis::Z);
-            },
+            }
             KeyCode::X => {
                 set_axis(selected.0, &mut order, Axis::X);
-            },
-            KeyCode::Y |
-            KeyCode::C => {
+            }
+            KeyCode::Y | KeyCode::C => {
                 set_axis(selected.0, &mut order, Axis::Y);
-            },
+            }
             _ => {}
         }
     }
@@ -290,18 +314,16 @@ fn set_axis(index: usize, order: &mut Order, to: Axis) {
 
 #[inline]
 fn set_arrow(index: usize, order: &mut Order, to: bool) {
-    order.0[index].1.0 = to;
+    order.0[index].1 .0 = to;
 }
 
 #[derive(Clone, Copy)]
 struct UIElements([Entity; MOVES]);
 
-fn update_ui(
-    elements: Res<UIElements>,
-    order: Res<Order>,
-    mut commands: Commands,
-) {
-    if !order.is_changed() {return;}
+fn update_ui(elements: Res<UIElements>, order: Res<Order>, mut commands: Commands) {
+    if !order.is_changed() {
+        return;
+    }
     for i in 0..MOVES {
         commands.entity(elements.0[i]).insert_bundle(order.0[i]);
     }
@@ -309,17 +331,17 @@ fn update_ui(
 
 fn set_ui_arrow(
     query: Query<(&Arrow, &Children), Changed<Arrow>>,
-    mut transforms : Query<&mut Transform>,
+    mut transforms: Query<&mut Transform>,
 ) {
     for (state, c) in query.iter() {
         if state.0 {
-                if let Ok(mut trans) = transforms.get_mut(c[0]) {
-                    trans.rotation = Quat::IDENTITY;
-                }
-            } else  {
-                if let Ok(mut trans) = transforms.get_mut(c[0]) {
-                    trans.rotation = Quat::from_rotation_z(std::f32::consts::PI);
-                }
+            if let Ok(mut trans) = transforms.get_mut(c[0]) {
+                trans.rotation = Quat::IDENTITY;
+            }
+        } else {
+            if let Ok(mut trans) = transforms.get_mut(c[0]) {
+                trans.rotation = Quat::from_rotation_z(std::f32::consts::PI);
+            }
         }
     }
 }
@@ -331,21 +353,21 @@ fn set_ui_letter(
 ) {
     for (state, c) in query.iter() {
         match state {
-                Axis::X => {
+            Axis::X => {
                 if let Ok(mut image) = ui_images.get_mut(c[1]) {
                     *image = directions.x.clone();
                 }
-            },
+            }
             Axis::Y => {
                 if let Ok(mut image) = ui_images.get_mut(c[1]) {
                     *image = directions.y.clone();
                 }
-            },
+            }
             Axis::Z => {
                 if let Ok(mut image) = ui_images.get_mut(c[1]) {
                     *image = directions.z.clone();
                 }
-            },
+            }
         }
     }
 }
@@ -382,7 +404,9 @@ fn run(
     time: Res<Time>,
     mut commands: Commands,
 ) {
-    if run.is_none() {return;}
+    if run.is_none() {
+        return;
+    }
     let run = run.unwrap();
     if run.is_added() {
         *progress = 0.0;
@@ -399,11 +423,16 @@ fn run(
         let under = time.delta_seconds() - over;
         trans.rotate_axis(order.as_vec3(*step), under * std::f32::consts::PI / 2.);
         *step += 1;
-        if *step == MOVES {return;};
+        if *step == MOVES {
+            return;
+        };
         trans.rotate_axis(order.as_vec3(*step), over * std::f32::consts::PI / 2.);
         *progress = over;
     } else {
-        trans.rotate_axis(order.as_vec3(*step), time.delta_seconds() * std::f32::consts::PI / 2.);
+        trans.rotate_axis(
+            order.as_vec3(*step),
+            time.delta_seconds() * std::f32::consts::PI / 2.,
+        );
         *progress += time.delta_seconds();
     }
 }

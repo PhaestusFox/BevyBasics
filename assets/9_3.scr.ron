@@ -1,0 +1,40 @@
+(
+    entities: {
+        0: (
+            components: {
+                ///////////////////////
+                {
+                    "type": "bevy_transform::components::transform::Transform",
+                    "struct": {
+                    "translation": {
+                        "type": "glam::vec3::Vec3",
+                        "value": (0.0, 0.0, 0.0),
+                    },
+                    "rotation": {
+                        "type": "glam::quat::Quat",
+                        "value": (0.0, 0.0, 0.0, 1.0),
+                    },
+                    "scale": {
+                        "type": "glam::vec3::Vec3",
+                        "value": (1.0, 1.0, 1.0),
+                    },
+                    },
+                },
+                ////////////////////
+                "bevy_transform::components::transform::Transform": (
+                    translation: (
+                        x: 0.0,
+                        y: 0.0,
+                        z: 0.0
+                    ),
+                    rotation: (0.0, 0.0, 0.0, 1.0),
+                    scale: (
+                        x: 1.0,
+                        y: 1.0,
+                        z: 1.0
+                    ),
+                ),
+            },
+        ),
+    }
+)

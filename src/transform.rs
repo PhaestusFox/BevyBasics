@@ -1,5 +1,5 @@
-use bevy::prelude::*;
 use crate::common::Events;
+use bevy::prelude::*;
 fn entity_move(
     mut cubes: Query<&mut Transform, With<TransformExample>>,
     input: Res<Input<KeyCode>>,
@@ -10,7 +10,9 @@ fn entity_move(
     let mut reset = false;
     for event in events.iter() {
         match event {
-            Events::Reset => {reset = true;}
+            Events::Reset => {
+                reset = true;
+            }
         }
     }
     let mut delta = Vec3::ZERO;
@@ -25,7 +27,7 @@ fn entity_move(
                 } else {
                     delta.x -= 1.;
                 }
-            },
+            }
             KeyCode::D => {
                 if input.pressed(KeyCode::R) {
                     rot.x += 1.0 * time.delta_seconds();
@@ -34,7 +36,7 @@ fn entity_move(
                 } else {
                     delta.x += 1.;
                 }
-            },
+            }
             KeyCode::W => {
                 if input.pressed(KeyCode::R) {
                     rot.y += 1.0 * time.delta_seconds();
@@ -43,7 +45,7 @@ fn entity_move(
                 } else {
                     delta.y += 1.;
                 }
-            },
+            }
             KeyCode::S => {
                 if input.pressed(KeyCode::R) {
                     rot.y -= 1.0 * time.delta_seconds();
@@ -52,7 +54,7 @@ fn entity_move(
                 } else {
                     delta.y -= 1.;
                 }
-            },
+            }
             KeyCode::Q => {
                 if input.pressed(KeyCode::R) {
                     rot.z -= 1.0 * time.delta_seconds();
@@ -61,7 +63,7 @@ fn entity_move(
                 } else {
                     delta.z -= 1.;
                 }
-            },
+            }
             KeyCode::E => {
                 if input.pressed(KeyCode::R) {
                     rot.z += 1.0 * time.delta_seconds();
@@ -70,8 +72,8 @@ fn entity_move(
                 } else {
                     delta.z += 1.;
                 }
-            },
-            _ => {},
+            }
+            _ => {}
         }
     }
     for mut cube in cubes.iter_mut() {
@@ -91,22 +93,23 @@ fn spawn_cube(
     mut meshs: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    commands.spawn_bundle(PbrBundle {
-        mesh: meshs.add(shape::Cube{size: 1.}.into()),
-        material: materials.add(Color::ORANGE_RED.into()),
-        transform: Transform::from_xyz(0., 1., 0.),
-        ..Default::default()
-    })
-    .insert(TransformExample)
-    .with_children(|p| {
-        p.spawn_bundle(PbrBundle {
-            mesh: meshs.add(shape::Cube{size: 1.}.into()),
-            material: materials.add(Color::ALICE_BLUE.into()),
+    commands
+        .spawn_bundle(PbrBundle {
+            mesh: meshs.add(shape::Cube { size: 1. }.into()),
+            material: materials.add(Color::ORANGE_RED.into()),
             transform: Transform::from_xyz(0., 1., 0.),
             ..Default::default()
         })
-        .insert(TransformExample);
-    });
+        .insert(TransformExample)
+        .with_children(|p| {
+            p.spawn_bundle(PbrBundle {
+                mesh: meshs.add(shape::Cube { size: 1. }.into()),
+                material: materials.add(Color::ALICE_BLUE.into()),
+                transform: Transform::from_xyz(0., 1., 0.),
+                ..Default::default()
+            })
+            .insert(TransformExample);
+        });
 }
 
 //setup /////////////////////////////////////////////////
@@ -115,15 +118,13 @@ pub struct TransformExample;
 
 impl Plugin for TransformExample {
     fn build(&self, app: &mut App) {
-        app
-        .add_startup_system(spawn_cube)
-        .add_system(entity_move);
+        app.add_startup_system(spawn_cube).add_system(entity_move);
     }
 }
 
 #[allow(dead_code, unused)]
 fn crate_transforms() {
-    let matrix = Transform::identity().compute_matrix();
+    let matrix = Transform::IDENTITY.compute_matrix();
 
     let transform = Transform::from_matrix(matrix);
     let transform = Transform::from_scale(Vec3::ONE);
@@ -137,7 +138,7 @@ fn crate_transforms() {
     fn get_transforms(transforms: Query<&Transform>) {
         //do stuff
     }
-    let global_transform = GlobalTransform::identity();
+    let global_transform = GlobalTransform::IDENTITY;
 
     transform.rotate(Quat::IDENTITY);
     let x = transform.local_x();
@@ -150,6 +151,4 @@ fn crate_transforms() {
     let up = global_transform.up();
     let left = global_transform.left();
     let (s, r, t) = global_transform.to_scale_rotation_translation();
-
-
 }

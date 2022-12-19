@@ -1,4 +1,4 @@
-use bevy::{prelude::*};
+use bevy::prelude::*;
 
 fn test(mut id: u8) -> impl FnMut(Res<Input<KeyCode>>) {
     move |input| {
@@ -9,11 +9,10 @@ fn test(mut id: u8) -> impl FnMut(Res<Input<KeyCode>>) {
     }
 }
 
+#[derive(Resource)]
 pub struct Slave(u8);
 
-pub fn hello(
-    is_slave: Local<Slave>,
-){
+pub fn hello(is_slave: Local<Slave>) {
     if is_slave.0 != 0 {
         println!("Hello from slave {}", is_slave.0);
     } else {
@@ -21,10 +20,7 @@ pub fn hello(
     }
 }
 
-pub fn hello2(
-    is_slave1: Local<Slave>,
-    is_slave2: Local<Slave>,
-){
+pub fn hello2(is_slave1: Local<Slave>, is_slave2: Local<Slave>) {
     if is_slave1.0 != 0 {
         println!("Hello from slave {}", is_slave1.0);
     } else {
@@ -45,15 +41,11 @@ impl FromWorld for Slave {
     }
 }
 
-fn edit_loacl(
-    mut slave: Local<Slave>,
-){
+fn edit_loacl(mut slave: Local<Slave>) {
     *slave = Slave(slave.0 + 1);
 }
 
-fn first_run_example(
-    mut not_first: Local<bool>,
-){
+fn first_run_example(mut not_first: Local<bool>) {
     if !(*not_first) {
         //first time the system runs
         *not_first = true;
@@ -63,12 +55,10 @@ fn first_run_example(
     //runs every time
 }
 
+#[derive(Default, Resource)]
 struct LastState(u64);
 
-fn change_example(
-    mut last_state: Local<LastState>,
-    this_state: Res<LastState>,
-){
+fn change_example(mut last_state: Local<LastState>, this_state: Res<LastState>) {
     if this_state.0 == last_state.0 {
         return;
     }

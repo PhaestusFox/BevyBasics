@@ -1,0 +1,15 @@
+(
+    entities: {
+        0: (
+            components: {
+                "type_name": (
+                    translation: (
+                        x: 0.0,
+                        y: 0.0,
+                        z: 0.0
+                    ),
+                ),
+            },
+        ),
+    }
+)

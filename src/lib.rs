@@ -4,48 +4,40 @@ mod common;
 pub use prelude::*;
 pub mod prelude {
     pub use super::{
-        common::*,
-        transform::TransformExample,
+        common::*, components::ComponentPlugin, ecs::ECSExample, entitys::EntityPlugin,
+        reflect::ReflectExample, resources::ResourcePlugin, scenes::ScenesExample, spawn_cam,
+        systems::SystemPlugin, transform::TransformExample, user_input::InputExample,
         visibility::VisibilityExample,
-        spawn_cam,
-        user_input::InputExample,
-        entitys::EntityPlugin,
-        systems::SystemPlugin,
-        ecs::ECSExample,
-        components::ComponentPlugin,
-        resources::ResourcePlugin,
-        reflect::ReflectExample,
-        scenes::ScenesExample,
     };
 }
 
-mod reflect;
-mod ecs;
-mod systems;
 mod components;
+mod ecs;
 mod entitys;
-mod resources;
-#[allow(dead_code)]
-mod query;
-#[allow(dead_code)]
-mod local;
 #[allow(dead_code)]
 mod events;
 #[allow(dead_code)]
-mod user_input;
-mod transform;
-mod visibility;
+mod local;
+#[allow(dead_code)]
+mod query;
+#[allow(dead_code)]
+mod reflect;
+mod resources;
 mod scenes;
-pub fn spawn_cam(
-    mut commands: Commands,
-) {
+mod systems;
+mod transform;
+#[allow(dead_code)]
+mod user_input;
+mod visibility;
+pub fn spawn_cam(mut commands: Commands) {
     let trans = Transform::from_xyz(5., 5., 5.);
-    commands.spawn_bundle(Camera3dBundle {
-        transform: trans.looking_at(Vec3::ZERO, Vec3::Y),
-        ..Default::default()
-    })
-    .insert(common::MainCamera);
-    commands.spawn_bundle(SpotLightBundle{
+    commands
+        .spawn_bundle(Camera3dBundle {
+            transform: trans.looking_at(Vec3::ZERO, Vec3::Y),
+            ..Default::default()
+        })
+        .insert(common::MainCamera);
+    commands.spawn_bundle(SpotLightBundle {
         transform: trans.looking_at(Vec3::ZERO, Vec3::Y),
         ..Default::default()
     });
